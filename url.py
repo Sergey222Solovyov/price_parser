@@ -1,1 +1,1 @@
-perekrestok_url = 'https://www.perekrestok.ru'
+perekrestok_url = 'https://www.perekrestok.ru/catalog'
