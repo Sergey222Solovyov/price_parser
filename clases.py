@@ -13,13 +13,13 @@ class Section:
 
 
 class SubCatalog:
-    def __init__(self, name, url):
+    def __init__(self, name, url, section_list: typing.List[Section]):
         self.url = url
         self.name = name
-        self.section_list = typing.List[Section]
+        self.section_list = section_list
 
 
 class Catalog:
-    def __init__(self, name, sub_catalog_list: typing.List[SubCatalog]):
+    def __init__(self, name, sub_catalog_list: typing.List):
         self.name = name
         self.sub_catalog_list = sub_catalog_list
