@@ -16,16 +16,17 @@ def get_section(url):
 
 def get_sub_catalog(catalog_id, html_data):
     sub_catalog = []
-    for tag in (html_data('a', {'class': "fo-catalog-menu__sub-link"})):
-        if catalog_id == tag.get('data-id'):
-            name = tag.get_text()
-            url = complete_url_fullness(tag.get('href'))
-            section_exist = check_section_existence(complete_url_fullness(tag.get('href')))
-            if section_exist:
-                section_list = get_section(url=complete_url_fullness(tag.get('href')))
-                sub_catalog.append(SubCatalog(name=name, url=url, section_list=section_list))
-            else:
-                sub_catalog.append(Section(name=name, url=url))
+
+    for tag in (html_data.find_all('a', {'data-id': catalog_id}, )):
+        name = tag.get_text()
+        url = complete_url_fullness(tag.get('href'))
+        section_exist = check_section_existence(complete_url_fullness(tag.get('href')))
+        if section_exist:
+            section_list = get_section(url=complete_url_fullness(tag.get('href')))
+            sub_catalog.append(SubCatalog(name=name, url=url, section_list=section_list))
+        else:
+            section_list = [Section(name=name, url=url)]
+            sub_catalog.append(SubCatalog(name=name, url=url, section_list=section_list))
 
     return sub_catalog
 
