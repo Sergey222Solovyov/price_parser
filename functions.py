@@ -6,104 +6,96 @@ from url import perekrestok_url
 from utils import needless_catalogs
 
 
-def get_product_values(html_data, product_list):
-    product_exists = False
-    for tag in (html_data('div', {'class': "xf-product js-product"})):
-        name = tag.get('data-owox-product-name')
-        price = tag.get('data-owox-product-price')
-        url = complete_url_fullness(
-            (html_data.find('a', {'class': "xf-product-picture__link js-product__image"})).get('href'))
-        product_list.append(Product(name=name, price=price, url=url))
-        product_exists = True
-    return product_exists
-
-
 def get_product(url):
-    PAGE = '?page='
-    i = 2
+    next_url = url + "?page=1"
     product_list = []
-    html_data = BeautifulSoup(get_html(url=url), "lxml")
-    product_exists = get_product_values(html_data, product_list)
-
-    while product_exists:
-        url_with_page = url + PAGE + str(i)
-        html_data = BeautifulSoup(get_html(url=url_with_page), "lxml")
+    products_exist = True
+    while products_exist:
+        products_exist = False
+        html_data = get_html_data(url=next_url)
+        for tag in (html_data('div', {'class': "xf-product js-product"})):
+            name = tag.get('data-owox-product-name')
+            price = tag.get('data-owox-product-price')
+            url = complete_url_fullness(tag.get('data-product-card-url'))
+            product_list.append(Product(name=name, price=price, url=url))
+            products_exist = True
         try:
-            href = html_data.find('link', {'rel': "canonical"}).get('href')
+            next_url = complete_url_fullness(
+                (html_data.find('a', {'class': "xf-paginator__item js-paginator__next"})).get('href'))
         except AttributeError:
-            href = url_with_page
-        if url_with_page == href:
-            product_exists = get_product_values(html_data, product_list)
-            i += 1
-        else:
-            product_exists = False
-
+            products_exist = False
     return product_list
 
 
 def get_section(url):
     section_list = []
-    html_data = BeautifulSoup(get_html(url=url), "lxml")
+    html_data = get_html_data(url=url)
     for tag in (html_data('a', {'class': "xf-filter__item-label xf-ripple js-xf-ripple xf-ripple_gray"})):
         url = complete_url_fullness(tag.get('href'))
         name = tag.get_text(strip=True)
-        product_list = get_product(url)
+        product_list = get_product(url=url)
         section_list.append(Section(name=name, url=url, product_list=product_list))
     return section_list
 
 
-def get_sub_catalog(catalog_id, html_data):
+def get_sub_catalog(html_data, catalog_id):
     sub_catalog = []
-
     for tag in (html_data.find_all('a', {'data-id': catalog_id})):
         name = tag.get_text()
         url = complete_url_fullness(tag.get('href'))
-        section_exist = check_section_existence(url)
-        if section_exist:
+        sections_exist = check_sections_existence(url=url)
+        if sections_exist:
             section_list = get_section(url=url)
             sub_catalog.append(SubCatalog(name=name, url=url, section_list=section_list))
         else:
-            section_list = [Section(name=name, url=url)]
+            product_list = get_product(url)
+            section_list = [Section(name=name, url=url, product_list=product_list)]
             sub_catalog.append(SubCatalog(name=name, url=url, section_list=section_list))
-
     return sub_catalog
 
 
-def get_catalog(html_data):
+def get_catalog(url):
+    html_data = get_html_data(url=url)
     catalog_list = []
     for tag in (html_data('a', {'class': "fo-catalog-menu__nav-link"})):
         name = tag.get_text()
         if re.search(name, needless_catalogs):
             continue
-        sub_catalog_list = get_sub_catalog(catalog_id=tag.get('data-category-id'), html_data=html_data)
-        catalog_list.append(Catalog(name=name, sub_catalog_list=sub_catalog_list))
+        else:
+            sub_catalog_list = get_sub_catalog(catalog_id=tag.get('data-category-id'), html_data=html_data)
+            catalog_list.append(Catalog(name=name, sub_catalog_list=sub_catalog_list))
     return catalog_list
 
 
-def get_html(url):
+def get_html_data(url):
     cookies = dict(region='1')
     try:
         html = requests.get(url, cookies=cookies)
     except Exception as exc:
         print(exc)
     else:
-        return html.text
+        try:
+            html_data = BeautifulSoup(html.text, "lxml")
+        except Exception as exc:
+            print(exc)
+        else:
+            return html_data
 
 
 def complete_url_fullness(url):
-    if re.search(r'\bhttps\b', url):
+    if re.search(r'\bhttps\b', url) or re.search(r'\bhttp\b', url):
         return url
     else:
         return perekrestok_url + url
 
 
-def check_section_existence(url):
-    html_data = BeautifulSoup(get_html(url=url), "lxml")
-    tag = (html_data('span', {'class': "xf-filter__header-text js-shave-container"}))
+def check_sections_existence(url):
+    html_data = get_html_data(url=url)
     try:
-        if tag[0].get_text(strip=True) == 'Разделы':
+        tag = (html_data.find('span', {'class': "xf-filter__header-text js-shave-container"}))
+        if tag.get_text(strip=True) == 'Разделы':
             return True
         else:
             return False
-    except IndexError:
+    except AttributeError:
         return False
