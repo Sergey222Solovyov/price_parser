@@ -1,8 +1,7 @@
 import time
 import re
 
-PEREKRESTOK_URL = 'https://www.perekrestok.ru'
-needless_catalogs = ["Скидки", "Сейчас актуально", "Зоотовары"]
+from settings import PEREKRESTOK_URL
 
 
 def complete_url_fullness(url):

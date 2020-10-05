@@ -1,18 +1,20 @@
 import requests
 from bs4 import BeautifulSoup
 from classes import Catalog, SubCatalog, Section, Product
-from utils import needless_catalogs, complete_url_fullness, PEREKRESTOK_URL
+from settings import needless_catalogs,  PEREKRESTOK_URL, CATALOG_LINK, SECTIONS_LINK, PRODUCTS_LINK, \
+    NEXT_PAGE_LINK, PRODUCT_NAME, PRODUCT_PRICE, PRODUCT_URL, CATALOG_ID, PAGE
+from utils import complete_url_fullness
 
 
 def parse_catalog():
     html_data = get_html_data(url=PEREKRESTOK_URL)
     catalog_list = []
-    for tag in (html_data('a', {'class': "fo-catalog-menu__nav-link"})):
+    for tag in (html_data('a', {'class': CATALOG_LINK})):
         name = tag.get_text()
         if name in needless_catalogs:
             continue
         else:
-            sub_catalog_list = parse_sub_catalog(catalog_id=tag.get('data-category-id'), html_data=html_data)
+            sub_catalog_list = parse_sub_catalog(catalog_id=tag.get(CATALOG_ID), html_data=html_data)
             catalog_list.append(Catalog(name=name, sub_catalog_list=sub_catalog_list))
     return catalog_list
 
@@ -35,7 +37,7 @@ def parse_sub_catalog(html_data, catalog_id):
 def parse_section(url):
     section_list = []
     html_data = get_html_data(url=url)
-    for tag in (html_data('a', {'class': "xf-filter__item-label xf-ripple js-xf-ripple xf-ripple_gray"})):
+    for tag in (html_data('a', {'class': SECTIONS_LINK})):
         name = tag.get_text(strip=True)
         url = complete_url_fullness(tag.get('href'))
         product_list = parse_product(url=url)
@@ -44,21 +46,21 @@ def parse_section(url):
 
 
 def parse_product(url):
-    next_url = url + "?page=1"
+    next_url = url + PAGE
     product_list = []
     products_exist = True
     while products_exist:
         products_exist = False
         html_data = get_html_data(url=next_url)
-        for tag in (html_data('div', {'class': "xf-product js-product"})):
-            name = tag.get('data-owox-product-name')
-            price = tag.get('data-owox-product-price')
-            url = complete_url_fullness(tag.get('data-product-card-url'))
+        for tag in (html_data('div', {'class': PRODUCTS_LINK})):
+            name = tag.get(PRODUCT_NAME)
+            price = tag.get(PRODUCT_PRICE)
+            url = complete_url_fullness(tag.get(PRODUCT_URL))
             product_list.append(Product(name=name, price=price, url=url))
             products_exist = True
         try:
             next_url = complete_url_fullness(
-                (html_data.find('a', {'class': "xf-paginator__item js-paginator__next"})).get('href'))
+                (html_data.find('a', {'class': NEXT_PAGE_LINK})).get('href'))
         except AttributeError:
             products_exist = False
     return product_list
