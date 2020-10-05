@@ -70,15 +70,11 @@ def get_html_data(url):
     cookies = dict(region='1')
     try:
         html = requests.get(url, cookies=cookies)
+        html_data = BeautifulSoup(html.text, "lxml")
     except Exception as exc:
         print(exc)
     else:
-        try:
-            html_data = BeautifulSoup(html.text, "lxml")
-        except Exception as exc:
-            print(exc)
-        else:
-            return html_data
+        return html_data
 
 
 def check_sections_existence(url):
