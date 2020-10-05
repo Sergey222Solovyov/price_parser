@@ -9,7 +9,7 @@ class Product:
 
 
 class Section:
-    def __init__(self, name, url,  product_list: typing.List[Product]):
+    def __init__(self, name, url, product_list: typing.List[Product]):
         self.name = name
         self.url = url
         self.product_list = product_list
@@ -17,8 +17,8 @@ class Section:
 
 class SubCatalog:
     def __init__(self, name, url, section_list: typing.List[Section]):
-        self.url = url
         self.name = name
+        self.url = url
         self.section_list = section_list
 
 

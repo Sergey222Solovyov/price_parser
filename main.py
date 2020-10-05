@@ -1,10 +1,10 @@
-from functions import get_catalog
+from parsing import parse_catalog
 from utils import time_track
 
 
 @time_track
 def main():
-    catalog = get_catalog("https://www.perekrestok.ru/")
+    catalog_list = parse_catalog()
 
 
 if __name__ == '__main__':
