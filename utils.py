@@ -1,11 +1,10 @@
 import time
-import re
 
 from settings import PEREKRESTOK_URL
 
 
 def complete_url_fullness(url):
-    if re.search(r'\bhttps\b', url) or re.search(r'\bhttp\b', url):
+    if 'http' in url:
         return url
     else:
         return PEREKRESTOK_URL + url
@@ -19,7 +18,7 @@ def time_track(func):
 
         ended_at = time.time()
         elapsed = round(ended_at - started_at, 4)
-        print(f'The function worked for {elapsed / 60} min')
+        print(f'The function worked for {elapsed} sec')
         return result
 
     return surrogate
