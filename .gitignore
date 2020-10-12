@@ -3,3 +3,4 @@ __pycache__/
 /venv
 settings.py
 watch_products.csv
+tracked_products.csv

@@ -1,4 +1,4 @@
-from file_operations import get_products_list_from_file, update_file, add_product_info_to_file
+from file import get_products_list_from_file, rewrite_file, add_product_to_file
 from get_html import get_html_data
 from settings import PRICE_LINK, PRICE
 
@@ -16,7 +16,7 @@ def get_price(url):
 
 def check_prices(file):
     products_list = get_products_list_from_file(file)
-    update_file(file)
+    rewrite_file(file)
     for product in products_list:
         new_price = get_price(product['URL'])
         if prices_equal(old_price=product['Price'], new_price=new_price):
@@ -24,7 +24,7 @@ def check_prices(file):
         else:
             print("Цена на товар: {} изменилась с '{}' на '{}'".format(product['Name'], product['Price'], new_price))
         product_info = [product['Name'], new_price, product['URL']]
-        add_product_info_to_file(product_info, file)
+        add_product_to_file(product_info, file)
 
 
 def prices_equal(old_price, new_price):
