@@ -1,6 +1,7 @@
 import csv
 
 from Product import Product
+from utils import convert_str_to_bool
 
 
 def rewrite_file(file):
@@ -18,15 +19,18 @@ def add_product_to_file(product, file):
             print("Не удалось записать данный товар в файл")
 
 
-def get_products_list_from_file(file):
-    products_list = []
+def get_product_list_from_file(file):
+    product_list = []
     try:
         with open(file, mode='r', newline='', encoding='cp1251') as file:
             reader = csv.DictReader(file, delimiter=";")
             for row in reader:
-                products_list.append(Product(name=row['Name'], price=row['Price'], url=row['URL'],
-                                             is_available=bool(row['Is available'])))
+                name = row['Name']
+                price = row['Price']
+                url = row['URL']
+                is_available = convert_str_to_bool(string=row['Is available'])
+                product_list.append(Product(name=name, price=price, url=url, is_available=is_available))
     except FileNotFoundError:
-        print("Файл с данным именем не найден.")
+        print("Файл не найден.")
         return []
-    return products_list
+    return product_list

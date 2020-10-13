@@ -3,6 +3,13 @@ import time
 from settings import PEREKRESTOK_URL
 
 
+def convert_str_to_bool(string):
+    if string == "True" or string == "TRUE":
+        return True
+    else:
+        return False
+
+
 def complete_url_fullness(url):
     if 'http' in url:
         return url
