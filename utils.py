@@ -4,10 +4,7 @@ from settings import PEREKRESTOK_URL
 
 
 def convert_str_to_bool(string):
-    if string == "True" or string == "TRUE":
-        return True
-    else:
-        return False
+    return string == "True" or string == "TRUE"
 
 
 def complete_url_fullness(url):
