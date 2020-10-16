@@ -16,7 +16,7 @@ def add_product_to_file(product, file):
         if product.error_free:
             writer.writerow([product.name, product.price, product.url, product.is_available])
         else:
-            print("Не удалось записать данный товар в файл")
+            print("Не удалось записать данный товар '{}' в файл.".format(product.name))
 
 
 def get_product_list_from_file(file):
@@ -34,3 +34,10 @@ def get_product_list_from_file(file):
         print("Файл не найден.")
         return []
     return product_list
+
+
+def overwrite_origin_file_with_duplicate(origin_file, duplicate_file):
+    rewrite_file(origin_file)
+    product_list = get_product_list_from_file(duplicate_file)
+    for product in product_list:
+        add_product_to_file(product, origin_file)

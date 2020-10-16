@@ -21,24 +21,35 @@ class Product:
             tag_name = self.html_data.find('div', {'class': PRODUCT_CARD})
             self.name = tag_name.get(PRODUCT_NAME)
         except AttributeError:
-            print("По данному URL: {} \n ничего не найдено".format(self.url))
+            print("По данному URL: {} ничего не найдено. \nНазвание Продукта: {}".format(self.url, self.name))
             self.error_free = False
 
     def set_is_available(self):
         if self.error_free:
-            tag = self.html_data.find('div', {'class': PRODUCT_CARD})
-            if tag.get(IS_AVAILABLE) == "1":
-                self.is_available = True
-            else:
-                self.is_available = False
+            try:
+                tag = self.html_data.find('div', {'class': PRODUCT_CARD})
+                if tag.get(IS_AVAILABLE) == "1":
+                    self.is_available = True
+                else:
+                    self.is_available = False
+            except AttributeError:
+                print("По данному URL: {} ничего не найдено. \nНазвание Продукта: {}".format(self.url, self.name))
+                self.error_free = False
 
     def set_price(self):
-        tag_price = self.html_data('span', {'class': PRICE})
-        for tag in tag_price:
-            if tag.get("itemprop") == "price":
-                self.price = tag.get_text()
-                break
-        if self.price == "None" and self.is_available:
+        try:
+            tag_price = self.html_data('span', {'class': PRICE})
+            for tag in tag_price:
+                if tag.get("itemprop") == "price":
+                    self.price = tag.get_text()
+                    break
+            if self.price == "None" and self.is_available:
+                self.error_free = False
+        except TypeError as exe:
+            print("{}, {}".format(exe, self.name))
+            self.error_free = False
+        except AttributeError as exe:
+            print("{}, {}".format(exe, self.name))
             self.error_free = False
 
     def set_html_data(self):

@@ -4,3 +4,4 @@ __pycache__/
 settings.py
 watch_products.csv
 tracked_products.csv
+watch_products(1).csv
