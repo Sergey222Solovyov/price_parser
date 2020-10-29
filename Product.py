@@ -22,12 +22,11 @@ class Product:
         self.name = tag_name.get(PRODUCT_NAME)
 
     def set_is_available(self):
-        if self.error_free:
-            tag = self.html_data.find('div', {'class': PRODUCT_CARD})
-            if tag.get(IS_AVAILABLE) == "1":
-                self.available = True
-            else:
-                self.available = False
+        tag = self.html_data.find('div', {'class': PRODUCT_CARD})
+        if tag.get(IS_AVAILABLE) == "1":
+            self.available = True
+        else:
+            self.available = False
 
     def set_price(self):
         tag_price = self.html_data('span', {'class': PRICE})
@@ -35,6 +34,9 @@ class Product:
             if tag.get("itemprop") == "price":
                 self.price = tag.get_text()
                 break
+
+        # Цена отсутствует у товаров, которых нет в наличии
+        # Если товар есть в наличии, а цена отсутствует, значит произошла ошибка.
         if self.price == "None" and self.available:
             self.error_free = False
 
@@ -44,7 +46,6 @@ class Product:
 
     def set_product_data(self):
         self.set_html_data()
-        self.error_check()
         if self.error_free:
             self.set_name()
             self.set_is_available()
