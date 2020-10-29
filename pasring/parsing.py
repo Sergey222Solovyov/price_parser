@@ -51,8 +51,8 @@ def parse_products(url, product_list, sub_catalog):
             name = tag.get(PRODUCT_NAME)
             price = tag.get(PRODUCT_PRICE)
             url = complete_url_fullness(url=tag.get(PRODUCT_URL))
-            product = Product(name=name, price=price, url=url, is_available=True)
-            product_list.append(Product(name=name, price=price, url=url, is_available=True))
+            product = Product(name=name, price=price, url=url, available=True)
+            product_list.append(Product(name=name, price=price, url=url, available=True))
             add_product_to_file(product, FILE)
             products_exist = True
         try:
