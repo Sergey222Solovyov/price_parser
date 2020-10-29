@@ -14,9 +14,11 @@ def add_product_to_file(product, file):
     with open(file, mode='a', newline='', encoding='cp1251') as file:
         writer = csv.writer(file, delimiter=';')
         if product.error_free:
-            writer.writerow([product.name, product.price, product.url, product.is_available])
+            writer.writerow([product.name, product.price, product.url, product.available])
+            return True
         else:
             print("Не удалось записать данный товар '{}' в файл.".format(product.name))
+            return False
 
 
 def get_product_list_from_file(file):
@@ -36,7 +38,7 @@ def get_product_list_from_file(file):
     return product_list
 
 
-def overwrite_origin_file_with_duplicate(origin_file, duplicate_file):
+def overwrite_origin_file(origin_file, duplicate_file):
     rewrite_file(origin_file)
     product_list = get_product_list_from_file(duplicate_file)
     for product in product_list:
