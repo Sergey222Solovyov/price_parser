@@ -31,7 +31,7 @@ def get_product_list_from_file(file):
                 price = row['Price']
                 url = row['URL']
                 is_available = convert_str_to_bool(string=row['Is available'])
-                product_list.append(Product(name=name, price=price, url=url, is_available=is_available))
+                product_list.append(Product(name=name, price=price, url=url, available=is_available))
     except FileNotFoundError:
         print("Файл не найден.")
         return []
