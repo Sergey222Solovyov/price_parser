@@ -5,15 +5,16 @@ from file import get_product_list_from_file, rewrite_file, add_product_to_file, 
 
 def update_product_list(origin_file, duplicate_file):
     product_list = get_product_list_from_file(origin_file)
-    product_thread_list = []
-    rewrite_file(file=duplicate_file)
-    for product in product_list:
-        product_thread = threading.Thread(target=update_product, args=(product, duplicate_file))
-        product_thread_list.append(product_thread)
-        product_thread.start()
-    for product_thread in product_thread_list:
-        product_thread.join()
-    overwrite_origin_file(origin_file=origin_file, duplicate_file=duplicate_file)
+    if product_list:
+        product_thread_list = []
+        rewrite_file(file=duplicate_file)
+        for product in product_list:
+            product_thread = threading.Thread(target=update_product, args=(product, duplicate_file))
+            product_thread_list.append(product_thread)
+            product_thread.start()
+        for product_thread in product_thread_list:
+            product_thread.join()
+        overwrite_origin_file(origin_file=origin_file, duplicate_file=duplicate_file)
 
 
 def update_product(product, duplicate_file):
